@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'detalle_sitio.dart'; // SitioModel viene de aquí
 import 'historial.dart';
 import 'reporte.dart';
+import 'equipo.dart';
+import 'perfil.dart';
 import 'login.dart';
 
 // =========================================================================
@@ -37,10 +39,10 @@ class MenuNavegacionGlobal extends StatelessWidget {
         sig = const ReportesPage();
         break;
       case 3:
-        sig = const PlaceholderScreen(titulo: "Equipo");
+        sig = const EquipoPage();
         break;
       case 4:
-        sig = const PlaceholderScreen(titulo: "Perfil");
+        sig = const PerfilPage();
         break;
       default:
         return;

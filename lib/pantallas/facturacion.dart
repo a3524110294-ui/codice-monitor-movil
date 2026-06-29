@@ -2,17 +2,57 @@ import 'package:flutter/material.dart';
 // Asegúrate de importar la pantalla de inicio
 import 'inicio.dart';
 
-class FacturacionPage extends StatelessWidget {
+class FacturacionPage extends StatefulWidget {
   final String selectedPlan;
   const FacturacionPage({super.key, required this.selectedPlan});
+
+  @override
+  State<FacturacionPage> createState() => _FacturacionPageState();
+}
+
+class _FacturacionPageState extends State<FacturacionPage> {
+  late FocusNode _titularFocusNode;
+  late FocusNode _tarjetaFocusNode;
+  late FocusNode _vencimientoFocusNode;
+  late FocusNode _cvvFocusNode;
+  late FocusNode _calleFocusNode;
+  late FocusNode _ciudadFocusNode;
+  late FocusNode _estadoFocusNode;
+  late FocusNode _postalFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _titularFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _tarjetaFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _vencimientoFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _cvvFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _calleFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _ciudadFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _estadoFocusNode = FocusNode()..addListener(() => setState(() {}));
+    _postalFocusNode = FocusNode()..addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _titularFocusNode.dispose();
+    _tarjetaFocusNode.dispose();
+    _vencimientoFocusNode.dispose();
+    _cvvFocusNode.dispose();
+    _calleFocusNode.dispose();
+    _ciudadFocusNode.dispose();
+    _estadoFocusNode.dispose();
+    _postalFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Definimos el precio según el plan recibido
     String precioPlan = "\$799";
-    if (selectedPlan.contains("1")) {
+    if (widget.selectedPlan.contains("1")) {
       precioPlan = "\$399";
-    } else if (selectedPlan.contains("3")) {
+    } else if (widget.selectedPlan.contains("3")) {
       precioPlan = "\$999";
     }
 
@@ -23,10 +63,17 @@ class FacturacionPage extends StatelessWidget {
         elevation: 0,
         // CORRECCIÓN: La flechita te regresa a la pantalla anterior (planes)
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black), 
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Facturación", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'Geist')),
+        title: const Text(
+          "Facturación",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Geist',
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -36,12 +83,18 @@ class FacturacionPage extends StatelessWidget {
             // Resumen del paquete
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: const Color(0xFFC7FFD1), borderRadius: BorderRadius.circular(16)),
+              decoration: BoxDecoration(
+                color: const Color(0xFFC7FFD1),
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
                     child: const Icon(Icons.check, color: Color(0xFF025E45)),
                   ),
                   const SizedBox(width: 16),
@@ -49,53 +102,129 @@ class FacturacionPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(selectedPlan, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Geist')),
-                        const Text("facturación mensual", style: TextStyle(fontSize: 12, color: Color(0xFF025E45), fontFamily: 'Geist')),
+                        Text(
+                          widget.selectedPlan,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontFamily: 'Geist',
+                          ),
+                        ),
+                        const Text(
+                          "facturación mensual",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF025E45),
+                            fontFamily: 'Geist',
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Text(precioPlan, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Geist')),
+                  Text(
+                    precioPlan,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Geist',
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Formulario de Pago
             Container(
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Datos de pago", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Geist')),
+                  const Text(
+                    "Datos de pago",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Geist',
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   _buildLabel("NOMBRE DEL TITULAR"),
-                  _buildField("Como aparece en la tarjeta"),
+                  _buildField(
+                    "Como aparece en la tarjeta",
+                    focusNode: _titularFocusNode,
+                  ),
                   _buildLabel("NÚMERO DE TARJETA"),
-                  _buildField("4242 4242 4242 4242", icon: Icons.credit_card),
+                  _buildField(
+                    "4242 4242 4242 4242",
+                    icon: Icons.credit_card,
+                    focusNode: _tarjetaFocusNode,
+                  ),
                   Row(
                     children: [
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildLabel("VENCIMIENTO"), _buildField("MM / AA")])),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel("VENCIMIENTO"),
+                            _buildField(
+                              "MM / AA",
+                              focusNode: _vencimientoFocusNode,
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(width: 16),
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildLabel("CVV"), _buildField("***")])),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel("CVV"),
+                            _buildField("***", focusNode: _cvvFocusNode),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   _buildLabel("CALLE Y NÚMERO"),
-                  _buildField("Av. Reforma 123, Int. 4"),
+                  _buildField(
+                    "Av. Reforma 123, Int. 4",
+                    focusNode: _calleFocusNode,
+                  ),
                   _buildLabel("CIUDAD"),
-                  _buildField("Ciudad de México"),
+                  _buildField("Ciudad de México", focusNode: _ciudadFocusNode),
                   Row(
                     children: [
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildLabel("ESTADO"), _buildField("CDMX")])),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel("ESTADO"),
+                            _buildField("CDMX", focusNode: _estadoFocusNode),
+                          ],
+                        ),
+                      ),
                       const SizedBox(width: 16),
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildLabel("C.P."), _buildField("06600")])),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLabel("C.P."),
+                            _buildField("06600", focusNode: _postalFocusNode),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Botón Procesar Pago
             SizedBox(
               width: double.infinity,
@@ -106,8 +235,11 @@ class FacturacionPage extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text(
-                        "Pago realizado exitosamente", 
-                        style: TextStyle(fontFamily: 'Geist', fontWeight: FontWeight.bold)
+                        "Pago realizado exitosamente",
+                        style: TextStyle(
+                          fontFamily: 'Geist',
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       backgroundColor: Color(0xFF12AC6E),
                       duration: Duration(seconds: 2),
@@ -121,16 +253,34 @@ class FacturacionPage extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.lock_outline, size: 20),
-                label: Text("Procesar pago • $precioPlan", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Geist')),
+                label: Text(
+                  "Procesar pago • $precioPlan",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Geist',
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF60F16E),
                   foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            const Center(child: Text("🔒 Pago cifrado y seguro", style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Geist'))),
+            const Center(
+              child: Text(
+                "🔒 Pago cifrado y seguro",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                  fontFamily: 'Geist',
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -139,19 +289,54 @@ class FacturacionPage extends StatelessWidget {
 
   Widget _buildLabel(String text) => Padding(
     padding: const EdgeInsets.only(top: 16, bottom: 8),
-    child: Text(text, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, fontFamily: 'Geist')),
-  );
-
-  Widget _buildField(String hint, {IconData? icon}) => TextField(
-    style: const TextStyle(fontFamily: 'Geist'),
-    decoration: InputDecoration(
-      hintText: hint,
-      hintStyle: TextStyle(fontFamily: 'Geist', color: Colors.grey.shade400),
-      prefixIcon: icon != null ? Icon(icon, color: Colors.grey) : null,
-      filled: true,
-      fillColor: const Color(0xFFF2F2F2).withOpacity(0.5),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.bold,
+        color: Colors.grey,
+        fontFamily: 'Geist',
+      ),
     ),
   );
+
+  Widget _buildField(
+    String hint, {
+    IconData? icon,
+    required FocusNode focusNode,
+  }) {
+    final bool isFocused = focusNode.hasFocus;
+    return TextField(
+      focusNode: focusNode,
+      style: const TextStyle(fontFamily: 'Geist'),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(fontFamily: 'Geist', color: Colors.grey.shade400),
+        prefixIcon: icon != null ? Icon(icon, color: Colors.grey) : null,
+        filled: true,
+        fillColor: const Color(0xFFF2F2F2).withValues(alpha: 0.5),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isFocused
+                ? const Color(0xFF3DF27D)
+                : const Color(0xFFE5E5E5),
+            width: 1.5,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: const Color(0xFFE5E5E5), width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: const Color(0xFF3DF27D), width: 1.5),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+      ),
+    );
+  }
 }

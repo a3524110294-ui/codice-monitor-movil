@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'inicio.dart';// 
+import 'inicio.dart'; //
 import 'login.dart';
 
 // =========================================================================
@@ -59,7 +59,8 @@ class _HistorialPageState extends State<HistorialPage> {
       hora: 'hace 12 min',
       duracion: '3h 15m',
       codigoHttp: 'HTTP 503',
-      descripcion: 'Interrupción total del servicio que impide el acceso al sistema. El monitoreo detectó tiempo de respuesta nulo de forma sostenida.',
+      descripcion:
+          'Interrupción total del servicio que impide el acceso al sistema. El monitoreo detectó tiempo de respuesta nulo de forma sostenida.',
       horaRestauracion: '17:15',
     ),
     Incidencia(
@@ -72,7 +73,8 @@ class _HistorialPageState extends State<HistorialPage> {
       hora: 'hace 38 min',
       duracion: '45m',
       codigoHttp: 'N/A',
-      descripcion: 'Los tiempos de respuesta superan el umbral óptimo configurado.',
+      descripcion:
+          'Los tiempos de respuesta superan el umbral óptimo configurado.',
       horaRestauracion: '16:40',
     ),
     Incidencia(
@@ -85,7 +87,8 @@ class _HistorialPageState extends State<HistorialPage> {
       hora: 'hace 1 h',
       duracion: '20m',
       codigoHttp: 'N/A',
-      descripcion: 'Degradación temporal del rendimiento de la base de datos externa.',
+      descripcion:
+          'Degradación temporal del rendimiento de la base de datos externa.',
       horaRestauracion: '15:20',
     ),
     Incidencia(
@@ -111,7 +114,8 @@ class _HistorialPageState extends State<HistorialPage> {
       hora: '22:14',
       duracion: '2h 10m',
       codigoHttp: 'HTTP 500',
-      descripcion: 'Fallo crítico inesperado en el microservicio de pasarela de pagos.',
+      descripcion:
+          'Fallo crítico inesperado en el microservicio de pasarela de pagos.',
       horaRestauracion: '00:24',
     ),
     Incidencia(
@@ -124,7 +128,8 @@ class _HistorialPageState extends State<HistorialPage> {
       hora: '18:30',
       duracion: 'N/A',
       codigoHttp: 'Advertencia',
-      descripcion: 'El certificado TLS/SSL expira en menos de 7 días. Requiere renovación inmediata.',
+      descripcion:
+          'El certificado TLS/SSL expira en menos de 7 días. Requiere renovación inmediata.',
       horaRestauracion: 'N/A',
     ),
     Incidencia(
@@ -137,14 +142,15 @@ class _HistorialPageState extends State<HistorialPage> {
       hora: '09:05',
       duracion: 'N/A',
       codigoHttp: 'HTTP 200',
-      descripcion: 'El sistema funciona de acuerdo con las métricas de rendimiento establecidas.',
+      descripcion:
+          'El sistema funciona de acuerdo con las métricas de rendimiento establecidas.',
       horaRestauracion: 'N/A',
     ),
   ];
 
   // Variables de filtrado actuales activos en la UI
   List<Incidencia> _incidenciasFiltradas = [];
-  String _rangoSeleccionado = ''; 
+  String _rangoSeleccionado = '';
   DateTime? _fechaInicioFiltro;
   DateTime? _fechaFinFiltro;
   bool _filtroCaidas = false;
@@ -167,7 +173,8 @@ class _HistorialPageState extends State<HistorialPage> {
     setState(() {
       _incidenciasFiltradas = _todasLasIncidencias.where((item) {
         // Filtrado por Tipo de Evento / Estado
-        bool tieneFiltroTipo = _filtroCaidas || _filtroAdvertencias || _filtroRestauraciones;
+        bool tieneFiltroTipo =
+            _filtroCaidas || _filtroAdvertencias || _filtroRestauraciones;
         if (tieneFiltroTipo) {
           if (item.estado == 'Caído' && !_filtroCaidas) return false;
           if (item.estado == 'Lento' && !_filtroAdvertencias) return false;
@@ -180,7 +187,7 @@ class _HistorialPageState extends State<HistorialPage> {
         }
 
         // Filtrado por Rango de Tiempo
-        final hoy = DateTime(2026, 6, 25); 
+        final hoy = DateTime(2026, 6, 25);
         if (_rangoSeleccionado == 'Hoy') {
           return item.fechaReal.year == hoy.year &&
               item.fechaReal.month == hoy.month &&
@@ -190,10 +197,12 @@ class _HistorialPageState extends State<HistorialPage> {
           return item.fechaReal.isAfter(limiteSieteDias) ||
               item.fechaReal.isAtSameMomentAs(limiteSieteDias);
         } else if (_rangoSeleccionado == 'Personalizado') {
-          if (_fechaInicioFiltro != null && item.fechaReal.isBefore(_fechaInicioFiltro!)) {
+          if (_fechaInicioFiltro != null &&
+              item.fechaReal.isBefore(_fechaInicioFiltro!)) {
             return false;
           }
-          if (_fechaFinFiltro != null && item.fechaReal.isAfter(_fechaFinFiltro!)) {
+          if (_fechaFinFiltro != null &&
+              item.fechaReal.isAfter(_fechaFinFiltro!)) {
             return false;
           }
         }
@@ -202,15 +211,24 @@ class _HistorialPageState extends State<HistorialPage> {
     });
   }
 
-  int get _countEstables => _todasLasIncidencias.where((e) => e.estado == 'Estable').length;
-  int get _countLentos => _todasLasIncidencias.where((e) => e.estado == 'Lento').length;
-  int get _countCaidas => _todasLasIncidencias.where((e) => e.estado == 'Caído').length;
+  int get _countEstables =>
+      _todasLasIncidencias.where((e) => e.estado == 'Estable').length;
+  int get _countLentos =>
+      _todasLasIncidencias.where((e) => e.estado == 'Lento').length;
+  int get _countCaidas =>
+      _todasLasIncidencias.where((e) => e.estado == 'Caído').length;
 
   @override
   Widget build(BuildContext context) {
-    final incidenciasHoy = _incidenciasFiltradas.where((e) => e.fecha == 'HOY').toList();
-    final incidenciasAyer = _incidenciasFiltradas.where((e) => e.fecha == 'AYER').toList();
-    final otrasIncidencias = _incidenciasFiltradas.where((e) => e.fecha != 'HOY' && e.fecha != 'AYER').toList();
+    final incidenciasHoy = _incidenciasFiltradas
+        .where((e) => e.fecha == 'HOY')
+        .toList();
+    final incidenciasAyer = _incidenciasFiltradas
+        .where((e) => e.fecha == 'AYER')
+        .toList();
+    final otrasIncidencias = _incidenciasFiltradas
+        .where((e) => e.fecha != 'HOY' && e.fecha != 'AYER')
+        .toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F5),
@@ -221,14 +239,33 @@ class _HistorialPageState extends State<HistorialPage> {
               children: [
                 // CABECERA
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 12.0,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Row(
                         children: [
-                          Text('Códice', style: TextStyle(fontFamily: 'GeistMono', fontWeight: FontWeight.bold, fontSize: 24, color: Color(0xFF141414))),
-                          Text('/', style: TextStyle(fontFamily: 'GeistMono', fontWeight: FontWeight.bold, fontSize: 24, color: Color(0xFF12AC6E))),
+                          Text(
+                            'Códice',
+                            style: TextStyle(
+                              fontFamily: 'GeistMono',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Color(0xFF141414),
+                            ),
+                          ),
+                          Text(
+                            '/',
+                            style: TextStyle(
+                              fontFamily: 'GeistMono',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Color(0xFF12AC6E),
+                            ),
+                          ),
                         ],
                       ),
                       GestureDetector(
@@ -240,9 +277,13 @@ class _HistorialPageState extends State<HistorialPage> {
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: const Color(0xFFE5E5E5)),
                           ),
-                          child: const Icon(Icons.filter_list, color: Color(0xFF141414), size: 20),
+                          child: const Icon(
+                            Icons.filter_list,
+                            color: Color(0xFF141414),
+                            size: 20,
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -259,25 +300,57 @@ class _HistorialPageState extends State<HistorialPage> {
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('Resumen — últimos 7 días', style: TextStyle(fontFamily: 'GeistMono', fontWeight: FontWeight.w500, fontSize: 15, color: Color(0xFF141414))),
-                                  Text('${_todasLasIncidencias.length} sitios', style: const TextStyle(fontFamily: 'GeistMono', fontSize: 13, color: Color(0xFF737373))),
+                                  const Text(
+                                    'Resumen — últimos 7 días',
+                                    style: TextStyle(
+                                      fontFamily: 'GeistMono',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      color: Color(0xFF141414),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${_todasLasIncidencias.length} sitios',
+                                    style: const TextStyle(
+                                      fontFamily: 'GeistMono',
+                                      fontSize: 13,
+                                      color: Color(0xFF737373),
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 16),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  _buildMetricaItem(_countEstables.toString(), 'Estables', const Color(0xFF12AC6E)),
-                                  _buildMetricaItem(_countLentos.toString(), 'Lentos', const Color(0xFFF5A524)),
-                                  _buildMetricaItem(_countCaidas.toString(), 'Caídas', const Color(0xFFE53E3E)),
+                                  _buildMetricaItem(
+                                    _countEstables.toString(),
+                                    'Estables',
+                                    const Color(0xFF12AC6E),
+                                  ),
+                                  _buildMetricaItem(
+                                    _countLentos.toString(),
+                                    'Lentos',
+                                    const Color(0xFFF5A524),
+                                  ),
+                                  _buildMetricaItem(
+                                    _countCaidas.toString(),
+                                    'Caídas',
+                                    const Color(0xFFE53E3E),
+                                  ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -286,44 +359,81 @@ class _HistorialPageState extends State<HistorialPage> {
                         // ACTIVIDAD RECIENTE CONTAINER
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 20,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('Actividad reciente', style: TextStyle(fontFamily: 'GeistMono', fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF141414))),
-                                  Text('todos los sitios'.toUpperCase(), style: const TextStyle(fontFamily: 'GeistMono', fontSize: 11, color: Color(0xFF737373), letterSpacing: 0.5)),
+                                  const Text(
+                                    'Actividad reciente',
+                                    style: TextStyle(
+                                      fontFamily: 'GeistMono',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Color(0xFF141414),
+                                    ),
+                                  ),
+                                  Text(
+                                    'todos los sitios'.toUpperCase(),
+                                    style: const TextStyle(
+                                      fontFamily: 'GeistMono',
+                                      fontSize: 11,
+                                      color: Color(0xFF737373),
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 16),
 
                               if (incidenciasHoy.isNotEmpty) ...[
                                 _buildHeaderSeccion('HOY'),
-                                ...incidenciasHoy.map((item) => _buildItemIncidencia(item)),
+                                ...incidenciasHoy.map(
+                                  (item) => _buildItemIncidencia(item),
+                                ),
                               ],
 
                               if (incidenciasAyer.isNotEmpty) ...[
                                 const SizedBox(height: 12),
                                 _buildHeaderSeccion('AYER'),
-                                ...incidenciasAyer.map((item) => _buildItemIncidencia(item)),
+                                ...incidenciasAyer.map(
+                                  (item) => _buildItemIncidencia(item),
+                                ),
                               ],
 
                               if (otrasIncidencias.isNotEmpty) ...[
                                 const SizedBox(height: 12),
                                 _buildHeaderSeccion('ANTERIORES'),
-                                ...otrasIncidencias.map((item) => _buildItemIncidencia(item)),
+                                ...otrasIncidencias.map(
+                                  (item) => _buildItemIncidencia(item),
+                                ),
                               ],
 
                               if (_incidenciasFiltradas.isEmpty)
                                 const Center(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 40.0),
-                                    child: Text('No hay eventos con los filtros actuales.', style: TextStyle(fontFamily: 'GeistMono', color: Color(0xFF737373))),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 40.0,
+                                    ),
+                                    child: Text(
+                                      'No hay eventos con los filtros actuales.',
+                                      style: TextStyle(
+                                        fontFamily: 'GeistMono',
+                                        color: Color(0xFF737373),
+                                      ),
+                                    ),
                                   ),
-                                )
+                                ),
                             ],
                           ),
                         ),
@@ -352,9 +462,24 @@ class _HistorialPageState extends State<HistorialPage> {
   Widget _buildMetricaItem(String valor, String etiqueta, Color color) {
     return Column(
       children: [
-        Text(valor, style: TextStyle(fontFamily: 'GeistMono', fontWeight: FontWeight.bold, fontSize: 28, color: color)),
+        Text(
+          valor,
+          style: TextStyle(
+            fontFamily: 'GeistMono',
+            fontWeight: FontWeight.bold,
+            fontSize: 28,
+            color: color,
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(etiqueta, style: const TextStyle(fontFamily: 'GeistMono', fontSize: 12, color: Color(0xFF737373))),
+        Text(
+          etiqueta,
+          style: const TextStyle(
+            fontFamily: 'GeistMono',
+            fontSize: 12,
+            color: Color(0xFF737373),
+          ),
+        ),
       ],
     );
   }
@@ -362,18 +487,34 @@ class _HistorialPageState extends State<HistorialPage> {
   Widget _buildHeaderSeccion(String titulo) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 12.0),
-      child: Text(titulo, style: const TextStyle(fontFamily: 'GeistMono', fontSize: 11, color: Color(0xFF737373), fontWeight: FontWeight.w500)),
+      child: Text(
+        titulo,
+        style: const TextStyle(
+          fontFamily: 'GeistMono',
+          fontSize: 11,
+          color: Color(0xFF737373),
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
   Widget _buildItemIncidencia(Incidencia item) {
-    Color colorIndicador; Color colorFondoTag; Color colorTextoTag;
+    Color colorIndicador;
+    Color colorFondoTag;
+    Color colorTextoTag;
     if (item.estado == 'Caído') {
-      colorIndicador = const Color(0xFFE53E3E); colorFondoTag = const Color(0xFFFCE4E4); colorTextoTag = const Color(0xFFE53E3E);
+      colorIndicador = const Color(0xFFE53E3E);
+      colorFondoTag = const Color(0xFFFCE4E4);
+      colorTextoTag = const Color(0xFFE53E3E);
     } else if (item.estado == 'Lento') {
-      colorIndicador = const Color(0xFFF5A524); colorFondoTag = const Color(0xFFFEF3D6); colorTextoTag = const Color(0xFFF5A524);
+      colorIndicador = const Color(0xFFF5A524);
+      colorFondoTag = const Color(0xFFFEF3D6);
+      colorTextoTag = const Color(0xFFF5A524);
     } else {
-      colorIndicador = const Color(0xFF12AC6E); colorFondoTag = const Color(0xFFC7FFD1); colorTextoTag = const Color(0xFF025E45);
+      colorIndicador = const Color(0xFF12AC6E);
+      colorFondoTag = const Color(0xFFC7FFD1);
+      colorTextoTag = const Color(0xFF025E45);
     }
 
     return InkWell(
@@ -387,7 +528,14 @@ class _HistorialPageState extends State<HistorialPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 4.0, right: 12.0),
-                  child: Container(width: 10, height: 10, decoration: BoxDecoration(color: colorIndicador, shape: BoxShape.circle)),
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: colorIndicador,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: Column(
@@ -396,8 +544,25 @@ class _HistorialPageState extends State<HistorialPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(child: Text(item.sitio, style: const TextStyle(fontFamily: 'GeistMono', fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF141414)))),
-                          Text(item.hora, style: const TextStyle(fontFamily: 'GeistMono', fontSize: 12, color: Color(0xFFA3A3A3))),
+                          Expanded(
+                            child: Text(
+                              item.sitio,
+                              style: const TextStyle(
+                                fontFamily: 'GeistMono',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color(0xFF141414),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            item.hora,
+                            style: const TextStyle(
+                              fontFamily: 'GeistMono',
+                              fontSize: 12,
+                              color: Color(0xFFA3A3A3),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 2),
@@ -405,17 +570,47 @@ class _HistorialPageState extends State<HistorialPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: Text(item.detalles, style: const TextStyle(fontFamily: 'GeistMono', fontSize: 12, color: Color(0xFF737373)))),
+                          Expanded(
+                            child: Text(
+                              item.detalles,
+                              style: const TextStyle(
+                                fontFamily: 'GeistMono',
+                                fontSize: 12,
+                                color: Color(0xFF737373),
+                              ),
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(color: colorFondoTag, borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorFondoTag,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(width: 5, height: 5, decoration: BoxDecoration(color: colorTextoTag, shape: BoxShape.circle)),
+                                Container(
+                                  width: 5,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: colorTextoTag,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
                                 const SizedBox(width: 6),
-                                Text(item.estado, style: TextStyle(fontFamily: 'GeistMono', fontSize: 11, fontWeight: FontWeight.bold, color: colorTextoTag)),
+                                Text(
+                                  item.estado,
+                                  style: TextStyle(
+                                    fontFamily: 'GeistMono',
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorTextoTag,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -426,7 +621,10 @@ class _HistorialPageState extends State<HistorialPage> {
                 ),
               ],
             ),
-            const Padding(padding: EdgeInsets.only(left: 22.0, top: 10.0), child: Divider(color: Color(0xFFF4F4F5), height: 1))
+            const Padding(
+              padding: EdgeInsets.only(left: 22.0, top: 10.0),
+              child: Divider(color: Color(0xFFF4F4F5), height: 1),
+            ),
           ],
         ),
       ),
@@ -434,7 +632,11 @@ class _HistorialPageState extends State<HistorialPage> {
   }
 
   void _mostrarDetalleIncidencia(Incidencia item) {
-    Color colorBarra = item.estado == 'Caído' ? const Color(0xFFE53E3E) : (item.estado == 'Lento' ? const Color(0xFFF5A524) : const Color(0xFF12AC6E));
+    Color colorBarra = item.estado == 'Caído'
+        ? const Color(0xFFE53E3E)
+        : (item.estado == 'Lento'
+              ? const Color(0xFFF5A524)
+              : const Color(0xFF12AC6E));
     setState(() => isBlurred = true);
 
     showGeneralDialog(
@@ -466,14 +668,41 @@ class _HistorialPageState extends State<HistorialPage> {
                         children: [
                           Row(
                             children: [
-                              Container(width: 4, height: 16, color: colorBarra),
+                              Container(
+                                width: 4,
+                                height: 16,
+                                color: colorBarra,
+                              ),
                               const SizedBox(width: 8),
-                              const Text('Descripción del error', style: TextStyle(fontSize: 16, fontFamily: 'GeistMono', fontWeight: FontWeight.bold, color: Color(0xFFE53E3E), decoration: TextDecoration.none)),
+                              const Text(
+                                'Descripción del error',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'GeistMono',
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE53E3E),
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
                             ],
                           ),
                           GestureDetector(
-                            onTap: () { Navigator.pop(context); setState(() => isBlurred = false); },
-                            child: Container(padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: const Color(0xFFF4F4F5), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.close, color: Color(0xFF737373), size: 18)),
+                            onTap: () {
+                              Navigator.pop(context);
+                              setState(() => isBlurred = false);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF4F4F5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Color(0xFF737373),
+                                size: 18,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -486,19 +715,46 @@ class _HistorialPageState extends State<HistorialPage> {
                       const Divider(color: Color(0xFFE5E5E5), height: 1),
                       _filaDetalle('Código', item.codigoHttp),
                       const SizedBox(height: 16),
-                      Text(item.descripcion, style: const TextStyle(fontSize: 12, fontFamily: 'GeistMono', color: Color(0xFF737373), height: 1.5, decoration: TextDecoration.none)),
+                      Text(
+                        item.descripcion,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'GeistMono',
+                          color: Color(0xFF737373),
+                          height: 1.5,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
                       const SizedBox(height: 20),
                       Container(
                         padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: const Color(0xFFC7FFD1), borderRadius: BorderRadius.circular(12)),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFC7FFD1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Row(
                           children: [
-                            const Icon(Icons.check_circle_outline, color: Color(0xFF025E45), size: 16),
+                            const Icon(
+                              Icons.check_circle_outline,
+                              color: Color(0xFF025E45),
+                              size: 16,
+                            ),
                             const SizedBox(width: 8),
-                            Expanded(child: Text('Resuelto - servicio restablecido a las ${item.horaRestauracion}', style: const TextStyle(fontSize: 11, fontFamily: 'GeistMono', color: Color(0xFF025E45), fontWeight: FontWeight.bold, decoration: TextDecoration.none))),
+                            Expanded(
+                              child: Text(
+                                'Resuelto - servicio restablecido a las ${item.horaRestauracion}',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontFamily: 'GeistMono',
+                                  color: Color(0xFF025E45),
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -516,8 +772,25 @@ class _HistorialPageState extends State<HistorialPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(titulo, style: const TextStyle(fontSize: 13, fontFamily: 'GeistMono', color: Color(0xFF737373), decoration: TextDecoration.none)),
-          Text(valor, style: const TextStyle(fontSize: 13, fontFamily: 'GeistMono', color: Color(0xFF141414), fontWeight: FontWeight.bold, decoration: TextDecoration.none)),
+          Text(
+            titulo,
+            style: const TextStyle(
+              fontSize: 13,
+              fontFamily: 'GeistMono',
+              color: Color(0xFF737373),
+              decoration: TextDecoration.none,
+            ),
+          ),
+          Text(
+            valor,
+            style: const TextStyle(
+              fontSize: 13,
+              fontFamily: 'GeistMono',
+              color: Color(0xFF141414),
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+            ),
+          ),
         ],
       ),
     );
@@ -530,15 +803,15 @@ class _HistorialPageState extends State<HistorialPage> {
     setState(() => isBlurred = true);
 
     // Estado local limpio al iniciar el modal
-    String localRango = ''; 
+    String localRango = '';
     DateTime? localInicio;
     DateTime? localFin;
     bool localCaidas = false;
     bool localAdvertencias = false;
     bool localRestauraciones = false;
-    
+
     // Almacenará el nombre del sitio seleccionado desde el desplegable (vacío significa todos)
-    String localSitioSeleccionado = ''; 
+    String localSitioSeleccionado = '';
 
     String formatoFecha(DateTime? f) {
       if (f == null) return '  /   /      ';
@@ -578,9 +851,27 @@ class _HistorialPageState extends State<HistorialPage> {
                               const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Filtrar historial', style: TextStyle(fontSize: 18, fontFamily: 'GeistMono', fontWeight: FontWeight.bold, color: Color(0xFF141414), decoration: TextDecoration.none)),
+                                  Text(
+                                    'Filtrar historial',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontFamily: 'GeistMono',
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF141414),
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
                                   SizedBox(height: 4),
-                                  Text('Acota el feed por fecha, tipo\nde evento y sitio.', style: TextStyle(fontSize: 12, fontFamily: 'GeistMono', color: Color(0xFF737373), decoration: TextDecoration.none, height: 1.3)),
+                                  Text(
+                                    'Acota el feed por fecha, tipo\nde evento y sitio.',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontFamily: 'GeistMono',
+                                      color: Color(0xFF737373),
+                                      decoration: TextDecoration.none,
+                                      height: 1.3,
+                                    ),
+                                  ),
                                 ],
                               ),
                               GestureDetector(
@@ -590,8 +881,15 @@ class _HistorialPageState extends State<HistorialPage> {
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(color: const Color(0xFFF4F4F5), borderRadius: BorderRadius.circular(10)),
-                                  child: const Icon(Icons.close, color: Color(0xFF737373), size: 16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF4F4F5),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Color(0xFF737373),
+                                    size: 16,
+                                  ),
                                 ),
                               ),
                             ],
@@ -605,9 +903,25 @@ class _HistorialPageState extends State<HistorialPage> {
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              _buildChipRango('Hoy', localRango, () => setModalState(() => localRango = 'Hoy')),
-                              _buildChipRango('Últimos 7 días', localRango, () => setModalState(() => localRango = 'Últimos 7 días')),
-                              _buildChipRango('Personalizado', localRango, () => setModalState(() => localRango = 'Personalizado')),
+                              _buildChipRango(
+                                'Hoy',
+                                localRango,
+                                () => setModalState(() => localRango = 'Hoy'),
+                              ),
+                              _buildChipRango(
+                                'Últimos 7 días',
+                                localRango,
+                                () => setModalState(
+                                  () => localRango = 'Últimos 7 días',
+                                ),
+                              ),
+                              _buildChipRango(
+                                'Personalizado',
+                                localRango,
+                                () => setModalState(
+                                  () => localRango = 'Personalizado',
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -622,20 +936,61 @@ class _HistorialPageState extends State<HistorialPage> {
                                     _seccionTituloFiltro('FECHA DE INICIO'),
                                     const SizedBox(height: 6),
                                     GestureDetector(
-                                      onTap: localRango != 'Personalizado' ? null : () async {
-                                        DateTime? picked = await showDatePicker(context: context, initialDate: DateTime(2026, 6, 25), firstDate: DateTime(2020), lastDate: DateTime(2030));
-                                        if (picked != null) setModalState(() => localInicio = picked);
-                                      },
+                                      onTap: localRango != 'Personalizado'
+                                          ? null
+                                          : () async {
+                                              DateTime? picked =
+                                                  await showDatePicker(
+                                                    context: context,
+                                                    initialDate: DateTime(
+                                                      2026,
+                                                      6,
+                                                      25,
+                                                    ),
+                                                    firstDate: DateTime(2020),
+                                                    lastDate: DateTime(2030),
+                                                  );
+                                              if (picked != null)
+                                                setModalState(
+                                                  () => localInicio = picked,
+                                                );
+                                            },
                                       child: Opacity(
-                                        opacity: localRango == 'Personalizado' ? 1.0 : 0.4,
+                                        opacity: localRango == 'Personalizado'
+                                            ? 1.0
+                                            : 0.4,
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE5E5E5))),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: const Color(0xFFE5E5E5),
+                                            ),
+                                          ),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF737373)),
+                                              const Icon(
+                                                Icons.calendar_today_outlined,
+                                                size: 16,
+                                                color: Color(0xFF737373),
+                                              ),
                                               const SizedBox(width: 8),
-                                              Text(formatoFecha(localInicio), style: const TextStyle(fontSize: 12, fontFamily: 'GeistMono', color: Color(0xFF141414), decoration: TextDecoration.none)),
+                                              Text(
+                                                formatoFecha(localInicio),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontFamily: 'GeistMono',
+                                                  color: Color(0xFF141414),
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -652,20 +1007,61 @@ class _HistorialPageState extends State<HistorialPage> {
                                     _seccionTituloFiltro('FECHA DE FIN'),
                                     const SizedBox(height: 6),
                                     GestureDetector(
-                                      onTap: localRango != 'Personalizado' ? null : () async {
-                                        DateTime? picked = await showDatePicker(context: context, initialDate: DateTime(2026, 6, 25), firstDate: DateTime(2020), lastDate: DateTime(2030));
-                                        if (picked != null) setModalState(() => localFin = picked);
-                                      },
+                                      onTap: localRango != 'Personalizado'
+                                          ? null
+                                          : () async {
+                                              DateTime? picked =
+                                                  await showDatePicker(
+                                                    context: context,
+                                                    initialDate: DateTime(
+                                                      2026,
+                                                      6,
+                                                      25,
+                                                    ),
+                                                    firstDate: DateTime(2020),
+                                                    lastDate: DateTime(2030),
+                                                  );
+                                              if (picked != null)
+                                                setModalState(
+                                                  () => localFin = picked,
+                                                );
+                                            },
                                       child: Opacity(
-                                        opacity: localRango == 'Personalizado' ? 1.0 : 0.4,
+                                        opacity: localRango == 'Personalizado'
+                                            ? 1.0
+                                            : 0.4,
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE5E5E5))),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: const Color(0xFFE5E5E5),
+                                            ),
+                                          ),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF737373)),
+                                              const Icon(
+                                                Icons.calendar_today_outlined,
+                                                size: 16,
+                                                color: Color(0xFF737373),
+                                              ),
                                               const SizedBox(width: 8),
-                                              Text(formatoFecha(localFin), style: const TextStyle(fontSize: 12, fontFamily: 'GeistMono', color: Color(0xFF141414), decoration: TextDecoration.none)),
+                                              Text(
+                                                formatoFecha(localFin),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontFamily: 'GeistMono',
+                                                  color: Color(0xFF141414),
+                                                  decoration:
+                                                      TextDecoration.none,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -685,15 +1081,35 @@ class _HistorialPageState extends State<HistorialPage> {
                             direction: Axis.vertical,
                             spacing: 8,
                             children: [
-                              _buildCheckboxRow('Caídas', localCaidas, const Color(0xFFE53E3E), const Color(0xFFFCE4E4), (val) {
-                                setModalState(() => localCaidas = val!);
-                              }),
-                              _buildCheckboxRow('Advertencias', localAdvertencias, const Color(0xFFF5A524), const Color(0xFFFEF3D6), (val) {
-                                setModalState(() => localAdvertencias = val!);
-                              }),
-                              _buildCheckboxRow('Restauraciones', localRestauraciones, const Color(0xFF12AC6E), const Color(0xFFC7FFD1), (val) {
-                                setModalState(() => localRestauraciones = val!);
-                              }),
+                              _buildCheckboxRow(
+                                'Caídas',
+                                localCaidas,
+                                const Color(0xFFE53E3E),
+                                const Color(0xFFFCE4E4),
+                                (val) {
+                                  setModalState(() => localCaidas = val!);
+                                },
+                              ),
+                              _buildCheckboxRow(
+                                'Advertencias',
+                                localAdvertencias,
+                                const Color(0xFFF5A524),
+                                const Color(0xFFFEF3D6),
+                                (val) {
+                                  setModalState(() => localAdvertencias = val!);
+                                },
+                              ),
+                              _buildCheckboxRow(
+                                'Restauraciones',
+                                localRestauraciones,
+                                const Color(0xFF12AC6E),
+                                const Color(0xFFC7FFD1),
+                                (val) {
+                                  setModalState(
+                                    () => localRestauraciones = val!,
+                                  );
+                                },
+                              ),
                             ],
                           ),
                           const SizedBox(height: 20),
@@ -704,21 +1120,50 @@ class _HistorialPageState extends State<HistorialPage> {
                           Material(
                             color: Colors.transparent,
                             child: DropdownButtonFormField<String>(
-                              value: localSitioSeleccionado.isEmpty ? '' : localSitioSeleccionado,
-                              style: const TextStyle(fontFamily: 'GeistMono', fontSize: 13, color: Color(0xFF141414)),
-                              icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF737373)),
+                              value: localSitioSeleccionado.isEmpty
+                                  ? ''
+                                  : localSitioSeleccionado,
+                              style: const TextStyle(
+                                fontFamily: 'GeistMono',
+                                fontSize: 13,
+                                color: Color(0xFF141414),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Color(0xFF737373),
+                              ),
                               decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.search, color: Color(0xFF737373), size: 18),
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  color: Color(0xFF737373),
+                                  size: 18,
+                                ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE5E5E5))),
-                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE5E5E5))),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 12,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFE5E5E5),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFFE5E5E5),
+                                  ),
+                                ),
                               ),
                               items: [
                                 const DropdownMenuItem<String>(
                                   value: '',
-                                  child: Text('Buscar sitio – todos', style: TextStyle(color: Color(0xFFA3A3A3))),
+                                  child: Text(
+                                    'Buscar sitio – todos',
+                                    style: TextStyle(color: Color(0xFFA3A3A3)),
+                                  ),
                                 ),
                                 ..._listaNombresSitios.map((String sitio) {
                                   return DropdownMenuItem<String>(
@@ -753,11 +1198,25 @@ class _HistorialPageState extends State<HistorialPage> {
                                     });
                                   },
                                   style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: Color(0xFFE5E5E5)),
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                    side: const BorderSide(
+                                      color: Color(0xFFE5E5E5),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
                                   ),
-                                  child: const Text('Limpiar', style: TextStyle(fontFamily: 'GeistMono', color: Color(0xFF141414), fontWeight: FontWeight.bold, fontSize: 13)),
+                                  child: const Text(
+                                    'Limpiar',
+                                    style: TextStyle(
+                                      fontFamily: 'GeistMono',
+                                      color: Color(0xFF141414),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -770,7 +1229,8 @@ class _HistorialPageState extends State<HistorialPage> {
                                       _fechaFinFiltro = localFin;
                                       _filtroCaidas = localCaidas;
                                       _filtroAdvertencias = localAdvertencias;
-                                      _filtroRestauraciones = localRestauraciones;
+                                      _filtroRestauraciones =
+                                          localRestauraciones;
                                       _busquedaSitio = localSitioSeleccionado;
                                       isBlurred = false;
                                     });
@@ -780,14 +1240,26 @@ class _HistorialPageState extends State<HistorialPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF5CE67E),
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
                                   ),
-                                  child: const Text('Aplicar filtros', style: TextStyle(fontFamily: 'GeistMono', color: Color(0xFF141414), fontWeight: FontWeight.bold, fontSize: 13)),
+                                  child: const Text(
+                                    'Aplicar filtros',
+                                    style: TextStyle(
+                                      fontFamily: 'GeistMono',
+                                      color: Color(0xFF141414),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -802,7 +1274,17 @@ class _HistorialPageState extends State<HistorialPage> {
   }
 
   Widget _seccionTituloFiltro(String text) {
-    return Text(text, style: const TextStyle(fontSize: 11, fontFamily: 'GeistMono', color: Color(0xFF737373), fontWeight: FontWeight.bold, letterSpacing: 0.5, decoration: TextDecoration.none));
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontFamily: 'GeistMono',
+        color: Color(0xFF737373),
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.5,
+        decoration: TextDecoration.none,
+      ),
+    );
   }
 
   Widget _buildChipRango(String titulo, String activo, VoidCallback onTap) {
@@ -814,14 +1296,35 @@ class _HistorialPageState extends State<HistorialPage> {
         decoration: BoxDecoration(
           color: esSeleccionado ? const Color(0xFFC7FFD1) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: esSeleccionado ? const Color(0xFF12AC6E) : const Color(0xFFE5E5E5)),
+          border: Border.all(
+            color: esSeleccionado
+                ? const Color(0xFF12AC6E)
+                : const Color(0xFFE5E5E5),
+          ),
         ),
-        child: Text(titulo, style: TextStyle(fontFamily: 'GeistMono', fontSize: 13, fontWeight: esSeleccionado ? FontWeight.bold : FontWeight.normal, color: esSeleccionado ? const Color(0xFF025E45) : const Color(0xFF141414), decoration: TextDecoration.none)),
+        child: Text(
+          titulo,
+          style: TextStyle(
+            fontFamily: 'GeistMono',
+            fontSize: 13,
+            fontWeight: esSeleccionado ? FontWeight.bold : FontWeight.normal,
+            color: esSeleccionado
+                ? const Color(0xFF025E45)
+                : const Color(0xFF141414),
+            decoration: TextDecoration.none,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildCheckboxRow(String etiqueta, bool checked, Color colorRama, Color fondoActivo, ValueChanged<bool?> onChanged) {
+  Widget _buildCheckboxRow(
+    String etiqueta,
+    bool checked,
+    Color colorRama,
+    Color fondoActivo,
+    ValueChanged<bool?> onChanged,
+  ) {
     return GestureDetector(
       onTap: () => onChanged(!checked),
       child: IntrinsicWidth(
@@ -829,131 +1332,38 @@ class _HistorialPageState extends State<HistorialPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: checked ? fondoActivo : Colors.white,
-            borderRadius: BorderRadius.circular(20), 
-            border: Border.all(color: checked ? colorRama : const Color(0xFFE5E5E5)),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: checked ? colorRama : const Color(0xFFE5E5E5),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(width: 6, height: 6, decoration: BoxDecoration(color: colorRama, shape: BoxShape.circle)),
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: colorRama,
+                  shape: BoxShape.circle,
+                ),
+              ),
               const SizedBox(width: 8),
-              Text(etiqueta, style: const TextStyle(fontFamily: 'GeistMono', fontSize: 13, color: Color(0xFF141414), decoration: TextDecoration.none)),
+              Text(
+                etiqueta,
+                style: const TextStyle(
+                  fontFamily: 'GeistMono',
+                  fontSize: 13,
+                  color: Color(0xFF141414),
+                  decoration: TextDecoration.none,
+                ),
+              ),
               if (checked) ...[
                 const SizedBox(width: 8),
-                Icon(Icons.check, size: 14, color: colorRama)
-              ]
+                Icon(Icons.check, size: 14, color: colorRama),
+              ],
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-// =========================================================================
-// 1. COMPONENTE GLOBAL DE MENÚ DE NAVEGACIÓN
-// =========================================================================
-class MenuNavegacionGlobal extends StatelessWidget {
-  final int paginaActual; 
-
-  const MenuNavegacionGlobal({super.key, required this.paginaActual});
-
-  void _navegar(BuildContext context, int indice) {
-    if (indice == 5) {
-      Navigator.popUntil(context, (route) => route.isFirst);
-      return;
-    }
-    if (indice == paginaActual) return;
-
-    Widget siguientePantalla;
-    switch (indice) {
-      case 0:
-        siguientePantalla = const InicioPage();
-        break;
-      case 1:
-        siguientePantalla = const HistorialPage(); // <- AQUÍ ESTABA EL PLACEHOLDER
-        break;
-      case 2:
-        siguientePantalla = const LoginScreen();
-        break;
-      case 3:
-        siguientePantalla = const PlaceholderScreen(titulo: "Equipo");
-        break;
-      case 4:
-        siguientePantalla = const PlaceholderScreen(titulo: "Perfil");
-        break;
-      default:
-        return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => siguientePantalla,
-        transitionDuration: Duration.zero,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFE5E5E5), width: 1)),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildBotonMenu(context, 0, Icons.home_outlined, Icons.home, "Inicio"),
-              _buildBotonMenu(context, 1, Icons.watch_later_outlined, Icons.watch_later, "Historial"),
-              _buildBotonMenu(context, 2, Icons.bar_chart, Icons.bar_chart, "Reportes"),
-              _buildBotonMenu(context, 3, Icons.groups_outlined, Icons.groups, "Equipo"),
-              _buildBotonMenu(context, 4, Icons.person_outline, Icons.person, "Perfil"),
-              _buildBotonMenu(context, 5, Icons.logout, Icons.logout, "Salir"),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBotonMenu(BuildContext context, int indice, IconData iconoInactivo, IconData iconoActivo, String etiqueta) {
-    bool esActivo = (paginaActual == indice);
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () => _navegar(context, indice),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: esActivo ? const Color(0xFFC7FFD1) : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                esActivo ? iconoActivo : iconoInactivo,
-                size: 24,
-                color: esActivo ? const Color(0xFF025E45) : const Color(0xFF737373),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              etiqueta,
-              style: TextStyle(
-                fontSize: 11,
-                fontFamily: 'Geist',
-                fontWeight: esActivo ? FontWeight.bold : FontWeight.normal,
-                color: esActivo ? const Color(0xFF12AC6E) : const Color(0xFF737373),
-              ),
-            ),
-          ],
         ),
       ),
     );
