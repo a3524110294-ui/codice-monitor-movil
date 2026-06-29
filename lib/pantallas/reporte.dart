@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'inicio.dart'; //
+import 'inicio.dart';
 import 'login.dart';
 import 'historial.dart';
+import 'equipo.dart';
+import 'perfil.dart';
 
 // =========================================================================
-// MODELOS DE DATOS AUXILIARES
+// MODELOS DE DATOS AUXILIARES (PREPARADOS PARA PRODUCCIÓN)
 // =========================================================================
-class ReporteSitio {
+class RegistroEstadoSitio {
   final String nombre;
   final String latencia;
   final String uptime;
   final String estado; // 'Estable', 'Lento', 'Caído'
+  final String
+  fechaRegistro; // Para cuando se listen múltiples registros históricos
 
-  ReporteSitio({
+  RegistroEstadoSitio({
     required this.nombre,
     required this.latencia,
     required this.uptime,
     required this.estado,
+    required this.fechaRegistro,
   });
 }
 
@@ -48,72 +53,115 @@ class ReportesPage extends StatefulWidget {
 class _ReportesPageState extends State<ReportesPage> {
   bool isBlurred = false;
 
-  // REQUERIMIENTO: Estados de selección inicializados en FALSE (desmarcados por defecto)
+  // Estados de selección del filtro (Inician desmarcados por requerimiento)
   bool _filtroEstableSeleccionado = false;
   bool _filtroLentoSeleccionado = false;
   bool _filtroCaidoSeleccionado = false;
+  bool _filtroUltimos7DiasSeleccionado = false;
 
-  // Fuente de datos maestra (Inalterable)
-  final List<ReporteSitio> _sitiosMaster = [
-    ReporteSitio(
+  // FUENTE DE DATOS: Simulando múltiples registros históricos de los sitios
+  final List<RegistroEstadoSitio> _historialMaster = [
+    RegistroEstadoSitio(
       nombre: 'Grupo APE',
       latencia: '200ms',
       uptime: '99.9%',
       estado: 'Estable',
+      fechaRegistro: 'Hoy, 10:00 AM',
     ),
-    ReporteSitio(
+    RegistroEstadoSitio(
       nombre: 'EzSafe',
       latencia: '870ms',
       uptime: '97.4%',
       estado: 'Lento',
+      fechaRegistro: 'Hoy, 09:45 AM',
     ),
-    ReporteSitio(
+    RegistroEstadoSitio(
       nombre: 'Witchie Watches',
       latencia: '—',
       uptime: '94.1%',
       estado: 'Caído',
+      fechaRegistro: 'Hoy, 09:30 AM',
+    ),
+    RegistroEstadoSitio(
+      nombre: 'Grupo APE',
+      latencia: '180ms',
+      uptime: '99.9%',
+      estado: 'Estable',
+      fechaRegistro: 'Ayer, 06:12 PM',
+    ),
+    RegistroEstadoSitio(
+      nombre: 'EzSafe',
+      latencia: '920ms',
+      uptime: '96.2%',
+      estado: 'Lento',
+      fechaRegistro: 'Ayer, 04:20 PM',
+    ),
+    RegistroEstadoSitio(
+      nombre: 'Witchie Watches',
+      latencia: '1200ms',
+      uptime: '94.1%',
+      estado: 'Lento',
+      fechaRegistro: 'Ayer, 02:15 PM',
+    ),
+    RegistroEstadoSitio(
+      nombre: 'Grupo APE',
+      latencia: '—',
+      uptime: '98.5%',
+      estado: 'Caído',
+      fechaRegistro: '12 Jun, 11:00 AM',
     ),
   ];
 
-  // Lista mutada que se renderiza en la tabla de abajo
-  List<ReporteSitio> _sitiosFiltrados = [];
+  // Lista filtrada que se renderiza dinámicamente
+  List<RegistroEstadoSitio> _historialFiltrado = [];
 
   @override
   void initState() {
     super.initState();
-    // Al inicio se despliegan todos los elementos
-    _sitiosFiltrados = List.from(_sitiosMaster);
+    // Al inicio se muestran todos los registros del historial
+    _historialFiltrado = List.from(_historialMaster);
   }
 
-  // REQUERIMIENTO: Lógica para ejecutar el filtrado real al presionar el botón
+  // Ejecuta el filtrado real en el feed al presionar "Filtrar"
   void _aplicarFiltradoPorEstatus() {
     setState(() {
-      // Si no hay ninguna casilla seleccionada, interpretamos que muestra todo
-      if (!_filtroEstableSeleccionado &&
-          !_filtroLentoSeleccionado &&
-          !_filtroCaidoSeleccionado) {
-        _sitiosFiltrados = List.from(_sitiosMaster);
-        return;
-      }
+      _historialFiltrado = _historialMaster.where((registro) {
+        final dentroDeLosUltimos7Dias =
+            !_filtroUltimos7DiasSeleccionado ||
+            registro.fechaRegistro.startsWith('Hoy') ||
+            registro.fechaRegistro.startsWith('Ayer');
 
-      // En caso contrario, filtra los objetos que coincidan con las selecciones activas
-      _sitiosFiltrados = _sitiosMaster.where((sitio) {
-        if (_filtroEstableSeleccionado && sitio.estado == 'Estable')
+        if (!dentroDeLosUltimos7Dias) {
+          return false;
+        }
+
+        if (!_filtroEstableSeleccionado &&
+            !_filtroLentoSeleccionado &&
+            !_filtroCaidoSeleccionado) {
           return true;
-        if (_filtroLentoSeleccionado && sitio.estado == 'Lento') return true;
-        if (_filtroCaidoSeleccionado && sitio.estado == 'Caído') return true;
+        }
+
+        if (_filtroEstableSeleccionado && registro.estado == 'Estable') {
+          return true;
+        }
+        if (_filtroLentoSeleccionado && registro.estado == 'Lento') {
+          return true;
+        }
+        if (_filtroCaidoSeleccionado && registro.estado == 'Caído') {
+          return true;
+        }
         return false;
       }).toList();
     });
   }
 
-  // Funcionalidad para resetear los filtros por completo
+  // Resetea los filtros y restaura todos los registros
   void _limpiarFiltros() {
     setState(() {
       _filtroEstableSeleccionado = false;
       _filtroLentoSeleccionado = false;
       _filtroCaidoSeleccionado = false;
-      _sitiosFiltrados = List.from(_sitiosMaster);
+      _historialFiltrado = List.from(_historialMaster);
     });
   }
 
@@ -177,27 +225,43 @@ class _ReportesPageState extends State<ReportesPage> {
                   ),
                 ),
 
-                // CONTENIDO EN SCROLL
+                // CONTENIDO SCROLLABLE
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
                       children: [
-                        // BOTONES DE FILTROS RÁPIDOS
+                        // FILTROS RÁPIDOS
                         Row(
                           children: [
                             _buildPillFiltro(
                               'Últimos 7 días',
                               icon: Icons.access_time,
+                              seleccionado: _filtroUltimos7DiasSeleccionado,
+                              onTap: () {
+                                setState(() {
+                                  _filtroUltimos7DiasSeleccionado = true;
+                                });
+                                _aplicarFiltradoPorEstatus();
+                              },
                             ),
                             const SizedBox(width: 8),
-                            _buildPillFiltro('Todos los sitios'),
+                            _buildPillFiltro(
+                              'Todos los sitios',
+                              seleccionado: !_filtroUltimos7DiasSeleccionado,
+                              onTap: () {
+                                setState(() {
+                                  _filtroUltimos7DiasSeleccionado = false;
+                                });
+                                _aplicarFiltradoPorEstatus();
+                              },
+                            ),
                           ],
                         ),
                         const SizedBox(height: 10),
 
-                        // REQUERIMIENTO: BOTÓN INTERACTIVO "FILTRAR" (Aplica los cambios al pulsarse)
+                        // BOTÓN "FILTRAR" (Interactividad real)
                         Align(
                           alignment: Alignment.centerLeft,
                           child: InkWell(
@@ -263,9 +327,12 @@ class _ReportesPageState extends State<ReportesPage> {
                                     style: TextStyle(
                                       fontFamily: 'GeistMono',
                                       fontSize: 11,
-                                      color: const Color(
-                                        0xFF737373,
-                                      ).withOpacity(0.8),
+                                      color: const Color.fromRGBO(
+                                        115,
+                                        115,
+                                        115,
+                                        0.8,
+                                      ),
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 0.5,
                                     ),
@@ -351,7 +418,7 @@ class _ReportesPageState extends State<ReportesPage> {
                                     ),
                                   ),
                                   Text(
-                                    '${_sitiosMaster.length} sitios',
+                                    'Últimos reportes',
                                     style: const TextStyle(
                                       fontFamily: 'GeistMono',
                                       fontSize: 13,
@@ -432,7 +499,7 @@ class _ReportesPageState extends State<ReportesPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // CARD: TIEMPO DE RESPUESTA (TABLA CON FILTRADO REAL APLICADO)
+                        // CARD: HISTORIAL / TIEMPO DE RESPUESTA (ADAPTADO PARA MÚLTIPLES REGISTROS)
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(20),
@@ -515,13 +582,12 @@ class _ReportesPageState extends State<ReportesPage> {
                               const SizedBox(height: 8),
                               const Divider(color: Color(0xFFE5E5E5)),
 
-                              // Mensaje adaptativo si no se encuentran elementos bajo el criterio
-                              if (_sitiosFiltrados.isEmpty)
+                              if (_historialFiltrado.isEmpty)
                                 const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 24.0),
+                                  padding: EdgeInsets.symmetric(vertical: 32.0),
                                   child: Center(
                                     child: Text(
-                                      'No hay sitios con este estatus',
+                                      'No hay registros históricos con este estatus',
                                       style: TextStyle(
                                         fontFamily: 'GeistMono',
                                         fontSize: 13,
@@ -531,8 +597,15 @@ class _ReportesPageState extends State<ReportesPage> {
                                   ),
                                 )
                               else
-                                ..._sitiosFiltrados.map(
-                                  (sitio) => _buildFilaTablaSitio(sitio),
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: _historialFiltrado.length,
+                                  itemBuilder: (context, index) {
+                                    return _buildFilaTablaSitio(
+                                      _historialFiltrado[index],
+                                    );
+                                  },
                                 ),
                             ],
                           ),
@@ -551,7 +624,7 @@ class _ReportesPageState extends State<ReportesPage> {
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: Container(color: Colors.black.withOpacity(0.08)),
+                child: Container(color: const Color.fromRGBO(0, 0, 0, 0.08)),
               ),
             ),
         ],
@@ -559,36 +632,55 @@ class _ReportesPageState extends State<ReportesPage> {
     );
   }
 
-  Widget _buildPillFiltro(String texto, {IconData? icon}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF12AC6E)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 15, color: const Color(0xFF12AC6E)),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            texto,
-            style: const TextStyle(
-              fontFamily: 'GeistMono',
-              fontSize: 13,
-              color: Color(0xFF12AC6E),
-              fontWeight: FontWeight.w500,
-            ),
+  Widget _buildPillFiltro(
+    String texto, {
+    IconData? icon,
+    bool seleccionado = false,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: seleccionado ? const Color(0xFFE8FFF0) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: seleccionado
+                ? const Color(0xFF12AC6E)
+                : const Color(0xFFE5E5E5),
           ),
-        ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 15,
+                color: seleccionado
+                    ? const Color(0xFF12AC6E)
+                    : const Color(0xFF12AC6E),
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              texto,
+              style: TextStyle(
+                fontFamily: 'GeistMono',
+                fontSize: 13,
+                color: seleccionado
+                    ? const Color(0xFF12AC6E)
+                    : const Color(0xFF141414),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // REQUERIMIENTO: El Tag cambia su diseño reflejando de forma precisa si está seleccionado o no
   Widget _buildTagEstatus(
     String titulo,
     Color color,
@@ -670,52 +762,67 @@ class _ReportesPageState extends State<ReportesPage> {
     );
   }
 
-  Widget _buildFilaTablaSitio(ReporteSitio sitio) {
-    Color tagFondo = sitio.estado == 'Caído'
+  Widget _buildFilaTablaSitio(RegistroEstadoSitio registro) {
+    Color tagFondo = registro.estado == 'Caído'
         ? const Color(0xFFFCE4E4)
-        : (sitio.estado == 'Lento'
+        : (registro.estado == 'Lento'
               ? const Color(0xFFFEF3D6)
               : const Color(0xFFC7FFD1));
-    Color tagTexto = sitio.estado == 'Caído'
+    Color tagTexto = registro.estado == 'Caído'
         ? const Color(0xFFE53E3E)
-        : (sitio.estado == 'Lento'
+        : (registro.estado == 'Lento'
               ? const Color(0xFFF5A524)
               : const Color(0xFF025E45));
 
     return InkWell(
       onTap: () {
-        if (sitio.estado == 'Caído') {
+        if (registro.estado == 'Caído') {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  ReporteDetalleErroresPage(nombreSitio: sitio.nombre),
+                  ReporteDetalleErroresPage(nombreSitio: registro.nombre),
             ),
           );
         }
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Expanded(
                   flex: 3,
-                  child: Text(
-                    sitio.nombre,
-                    style: const TextStyle(
-                      fontFamily: 'GeistMono',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Color(0xFF141414),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        registro.nombre,
+                        style: const TextStyle(
+                          fontFamily: 'GeistMono',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Color(0xFF141414),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        registro.fechaRegistro,
+                        style: const TextStyle(
+                          fontFamily: 'GeistMono',
+                          fontSize: 10,
+                          color: Color(0xFFA3A3A3),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
                   flex: 2,
                   child: Text(
-                    sitio.latencia,
+                    registro.latencia,
                     style: const TextStyle(
                       fontFamily: 'GeistMono',
                       fontSize: 13,
@@ -737,7 +844,7 @@ class _ReportesPageState extends State<ReportesPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        sitio.uptime,
+                        registro.uptime,
                         style: TextStyle(
                           fontFamily: 'GeistMono',
                           fontSize: 12,
@@ -770,7 +877,7 @@ class _ReportesPageState extends State<ReportesPage> {
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black26.withOpacity(0.15),
+      barrierColor: const Color.fromRGBO(0, 0, 0, 0.15),
       pageBuilder: (context, animation, secondaryAnimation) {
         return StatefulBuilder(
           builder: (context, setModalState) {
@@ -779,7 +886,7 @@ class _ReportesPageState extends State<ReportesPage> {
                 margin: const EdgeInsets.all(20),
                 constraints: const BoxConstraints(maxWidth: 380),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.96),
+                  color: const Color.fromRGBO(255, 255, 255, 0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: const Color(0xFFE5E5E5), width: 1),
                 ),
@@ -1155,7 +1262,7 @@ class _ReportesPageState extends State<ReportesPage> {
           decoration: BoxDecoration(
             color: seleccionado
                 ? Colors.white
-                : const Color(0xFFF4F4F5).withOpacity(0.5),
+                : const Color.fromRGBO(244, 244, 245, 0.5),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: seleccionado
@@ -1361,7 +1468,7 @@ class _ReporteDetalleErroresPageState extends State<ReporteDetalleErroresPage> {
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: Container(color: Colors.black.withOpacity(0.08)),
+                child: Container(color: const Color.fromRGBO(0, 0, 0, 0.08)),
               ),
             ),
         ],
@@ -1457,14 +1564,14 @@ class _ReporteDetalleErroresPageState extends State<ReporteDetalleErroresPage> {
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black26.withOpacity(0.15),
+      barrierColor: const Color.fromRGBO(0, 0, 0, 0.15),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: Container(
             margin: const EdgeInsets.all(20),
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.95),
+              color: const Color.fromRGBO(255, 255, 255, 0.95),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: const Color(0xFFE5E5E5), width: 1.5),
             ),
@@ -1659,4 +1766,158 @@ class DonutChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+/// =========================================================================
+// 1. COMPONENTE GLOBAL DE MENÚ DE NAVEGACIÓN (CORREGIDO)
+// =========================================================================
+class MenuNavegacionGlobal extends StatelessWidget {
+  final int paginaActual;
+
+  const MenuNavegacionGlobal({super.key, required this.paginaActual});
+
+  void _navegar(BuildContext context, int indice) {
+    if (indice == paginaActual) return;
+
+    Widget siguientePantalla;
+    switch (indice) {
+      case 0:
+        siguientePantalla = const InicioPage();
+        break;
+      case 1:
+        siguientePantalla = HistorialPage();
+        break;
+      case 2:
+        siguientePantalla = ReportesPage();
+        break;
+      case 3:
+        siguientePantalla = EquipoPage();
+        break;
+      case 4:
+        siguientePantalla = PerfilPage();
+        break;
+      case 5:
+        // Corrección: Envía al login de forma limpia borrando el historial de navegación previo
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+          (route) => false,
+        );
+        return;
+      default:
+        return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => siguientePantalla,
+        transitionDuration: Duration.zero,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xFFE5E5E5), width: 1)),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildBotonMenu(
+                context,
+                0,
+                Icons.home_outlined,
+                Icons.home,
+                "Inicio",
+              ),
+              _buildBotonMenu(
+                context,
+                1,
+                Icons.watch_later_outlined,
+                Icons.watch_later,
+                "Historial",
+              ),
+              _buildBotonMenu(
+                context,
+                2,
+                Icons.bar_chart_outlined,
+                Icons.bar_chart,
+                "Reportes",
+              ),
+              _buildBotonMenu(
+                context,
+                3,
+                Icons.groups_outlined,
+                Icons.groups,
+                "Equipo",
+              ),
+              _buildBotonMenu(
+                context,
+                4,
+                Icons.person_outline,
+                Icons.person,
+                "Perfil",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBotonMenu(
+    BuildContext context,
+    int indice,
+    IconData iconoInactivo,
+    IconData iconoActivo,
+    String etiqueta,
+  ) {
+    bool esActivo = (paginaActual == indice);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _navegar(context, indice),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                color: esActivo ? const Color(0xFFC7FFD1) : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                esActivo ? iconoActivo : iconoInactivo,
+                size: 24,
+                color: esActivo
+                    ? const Color(0xFF025E45)
+                    : const Color(0xFF737373),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              etiqueta,
+              style: TextStyle(
+                fontSize: 11,
+                fontFamily: 'Geist',
+                fontWeight: esActivo ? FontWeight.bold : FontWeight.normal,
+                color: esActivo
+                    ? const Color(0xFF12AC6E)
+                    : const Color(0xFF737373),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

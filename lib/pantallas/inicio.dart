@@ -87,7 +87,6 @@ class MenuNavegacionGlobal extends StatelessWidget {
               ),
               _btn(context, 3, Icons.groups_outlined, Icons.groups, "Equipo"),
               _btn(context, 4, Icons.person_outline, Icons.person, "Perfil"),
-              _btn(context, 5, Icons.logout, Icons.logout, "Salir"),
             ],
           ),
         ),
@@ -237,6 +236,14 @@ class _InicioPageState extends State<InicioPage> {
     return DashboardLlenoPage(
       sitios: _sitios,
       onAgregarTap: () => _mostrarModal(context),
+      onEliminar: (sitio) {
+        setState(() {
+          _sitios.remove(sitio);
+        });
+      },
+      onSiteChanged: () {
+        setState(() {});
+      },
     );
   }
 }
@@ -443,10 +450,15 @@ class DashboardVacioPage extends StatelessWidget {
 class DashboardLlenoPage extends StatelessWidget {
   final List<SitioModel> sitios;
   final VoidCallback onAgregarTap;
+  final ValueChanged<SitioModel> onEliminar;
+  final VoidCallback onSiteChanged;
+
   const DashboardLlenoPage({
     super.key,
     required this.sitios,
     required this.onAgregarTap,
+    required this.onEliminar,
+    required this.onSiteChanged,
   });
 
   @override
@@ -592,12 +604,19 @@ class DashboardLlenoPage extends StatelessWidget {
   Widget _buildSiteRow(BuildContext context, SitioModel sitio) {
     return GestureDetector(
       onTap: () {
-        if (sitio.estado == "Caído" || sitio.estado == "Lento") {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => DetalleSitioPage(sitio: sitio)),
-          );
-        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetalleSitioPage(
+              sitio: sitio,
+              onEliminar: () {
+                onEliminar(sitio);
+                Navigator.pop(context);
+              },
+              onSiteChanged: onSiteChanged,
+            ),
+          ),
+        ).then((_) => onSiteChanged());
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -644,10 +663,29 @@ class DashboardLlenoPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: sitio.fondoEstado,
+                color: sitio.estaPausado
+                    ? const Color(0xFFF0F4F8)
+                    : sitio.fondoEstado,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: sitio.estado == "Caído"
+              child: sitio.estaPausado
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.circle, size: 7, color: Color(0xFF6B7280)),
+                        SizedBox(width: 5),
+                        Text(
+                          'Pausado',
+                          style: TextStyle(
+                            color: Color(0xFF6B7280),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Geist',
+                          ),
+                        ),
+                      ],
+                    )
+                  : sitio.estado == "Caído"
                   ? Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

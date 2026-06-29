@@ -1140,7 +1140,6 @@ class MenuNavegacionGlobal extends StatelessWidget {
                 Icons.person,
                 "Perfil",
               ),
-              _buildBotonMenu(context, 5, Icons.logout, Icons.logout, "Salir"),
             ],
           ),
         ),

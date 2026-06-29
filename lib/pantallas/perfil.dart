@@ -41,6 +41,7 @@ class _PerfilPageState extends State<PerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF4F4F5),
       body: SafeArea(
         child: Column(
@@ -49,7 +50,7 @@ class _PerfilPageState extends State<PerfilPage> {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 120.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -203,6 +204,47 @@ class _PerfilPageState extends State<PerfilPage> {
                               );
                             },
                           ),
+                          const SizedBox(height: 16),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginScreen(),
+                                    ),
+                                    (route) => false,
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  side: const BorderSide(
+                                    color: Color(0xFFFF4B4B),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Cerrar sesión',
+                                  style: TextStyle(
+                                    color: Color(0xFFFF4B4B),
+                                    fontFamily: 'GeistMono',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -210,11 +252,11 @@ class _PerfilPageState extends State<PerfilPage> {
                 ),
               ),
             ),
-            // BARRA DE NAVEGACIÓN INFERIOR (Página actual: 4 - Perfil)
-            const MenuNavegacionGlobal(paginaActual: 4),
+            const SizedBox(height: 24),
           ],
         ),
       ),
+      bottomNavigationBar: const MenuNavegacionGlobal(paginaActual: 4),
     );
   }
 
@@ -1588,7 +1630,6 @@ class MenuNavegacionGlobal extends StatelessWidget {
               _buildBotonMenu(context, 2, Icons.bar_chart, "Reportes"),
               _buildBotonMenu(context, 3, Icons.groups_outlined, "Equipo"),
               _buildBotonMenu(context, 4, Icons.person_outline, "Perfil"),
-              _buildBotonMenu(context, 5, Icons.logout, "Salir"),
             ],
           ),
         ),
